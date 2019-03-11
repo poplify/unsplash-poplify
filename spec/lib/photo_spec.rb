@@ -140,6 +140,15 @@ describe Unsplash::Photo do
       expect(@photos.total).to eq 541
       expect(@photos.total_pages).to eq 181
     end
+
+    it "returns a SearchResult of Photos with orientation parameter" do
+      VCR.use_cassette("photos") do
+        @photos = Unsplash::Photo.search("dog", 1, 3, :portrait)
+      end
+
+      expect(@photos).to be_an Unsplash::SearchResult
+      expect(@photos.size).to eq 3
+    end
   end
 
   describe "#index" do
@@ -182,7 +191,7 @@ describe Unsplash::Photo do
         VCR.use_cassette("photos", match_requests_on: [:method, :path, :body]) do
           @photo = Unsplash::Photo.create "spec/support/upload-1.txt"
         end
-      }.to raise_error Unsplash::Error
+      }.to raise_error Unsplash::DeprecationError
     end
 
   end
